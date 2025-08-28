@@ -19,12 +19,12 @@ if (!process.env.REDIS_URL) {
 	console.error("REDIS_URL is not defined")
 	process.exit(1)
 }
-const redisClient = new Redis(process.env.REDIS_URL)
-// const redisClient = new Redis(process.env.REDIS_URL, {
-// 	tls: {
-// 		rejectUnauthorized: false,
-// 	},
-// })
+// const redisClient = new Redis(process.env.REDIS_URL)
+const redisClient = new Redis(process.env.REDIS_URL, {
+	tls: {
+		rejectUnauthorized: false,
+	},
+})
 
 redisClient.on("connect", () => {
 	console.log("Connected to Redis")
