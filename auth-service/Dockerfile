@@ -40,8 +40,8 @@ RUN pnpm install --prod
 # Copy compiled JS from build stage
 COPY --from=build /usr/src/app/dist ./dist
 
-# Copy generated Prisma client (inside src/generated)
-COPY --from=build /usr/src/app/src/generated ./src/generated
+# Copy generated Prisma client (inside dist/generated)
+COPY --from=build /usr/src/app/dist/generated ./dist/generated
 
 EXPOSE 3001
 
