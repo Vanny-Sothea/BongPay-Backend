@@ -19,6 +19,9 @@ COPY . .
 # Generate Prisma client before TypeScript compilation
 RUN pnpm exec prisma generate
 
+# Debug: list generated files to verify Prisma client
+RUN ls -R /usr/src/app/src/generated
+
 # Compile TypeScript
 RUN pnpm exec tsc
 
@@ -40,8 +43,8 @@ RUN pnpm install --prod
 # Copy compiled JS from build stage
 COPY --from=build /usr/src/app/dist ./dist
 
-# Copy generated Prisma client (inside dist/generated)
-COPY --from=build /usr/src/app/dist/generated ./dist/generated
+# Copy generated Prisma client (inside src/generated)
+COPY --from=build /usr/src/app/src/generated ./src/generated
 
 EXPOSE 3001
 
