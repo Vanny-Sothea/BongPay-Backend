@@ -35,12 +35,11 @@ RUN npm install -g pnpm@10.15.0
 COPY package*.json pnpm-lock.yaml ./
 RUN pnpm install --prod
 
+# Copy the entire node_modules from the build stage to get
+COPY --from=build /usr/src/app/node_modules ./node_modules
+
 # Copy compiled JS from build stage
 COPY --from=build /usr/src/app/dist ./dist
-
-# Also copy generated Prisma client
-COPY --from=build /usr/src/app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=build /usr/src/app/node_modules/@prisma ./node_modules/@prisma
 
 EXPOSE 3001
 
