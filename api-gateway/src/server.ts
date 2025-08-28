@@ -35,7 +35,7 @@ redisClient.on("error", (err) => {
 })
 
 const corsOptions = {
-	origin: ["http://localhost:3000", "http://localhost:3002"],
+	origin: ["http://localhost:3000", "http://localhost:3003", "bongpay.vercel.app", "bongpay-vanny-sotheas-projects.vercel.app", "bongpay-git-main-vanny-sotheas-projects.vercel.app", "bongpay-9tvadmw5g-vanny-sotheas-projects.vercel.app"],
 	credentials: true,
 }
 
