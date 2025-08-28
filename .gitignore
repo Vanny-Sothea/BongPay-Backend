@@ -1,0 +1,54 @@
+# Node.js dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+yarn.lock
+.pnpm-debug.log
+
+# Build and dist files
+dist/
+build/
+out/
+.next/
+.nuxt/
+coverage/
+.cache/
+
+# Environment & config
+.env
+.env.*        # e.g. .env.dev, .env.prod
+*.local
+*.secret
+
+# OS and IDE files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# Logs
+logs/
+*.log
+*.log.*
+debug.log
+
+# Test & tooling
+coverage/
+.nyc_output/
+.jest/
+.tmp/
+
+# Docker & CI
+docker-compose.override.yml
+*.pid
+*.seed
+*.tgz
+
+# Misc
+*.bak
+*.orig
+*.rej
