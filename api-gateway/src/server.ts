@@ -34,9 +34,26 @@ redisClient.on("error", (err) => {
 	console.error("Redis error:", err)
 })
 
+const allowedOrigins = [
+	"http://localhost:3000",
+	"http://localhost:3003",
+	"https://bongpay.vercel.app",
+	"https://bongpay-vanny-sotheas-projects.vercel.app",
+	"https://bongpay-git-main-vanny-sotheas-projects.vercel.app",
+	"https://bongpay-9tvadmw5g-vanny-sotheas-projects.vercel.app",
+]
+
 const corsOptions = {
-	origin: ["http://localhost:3000", "http://localhost:3003", "bongpay.vercel.app", "bongpay-vanny-sotheas-projects.vercel.app", "bongpay-git-main-vanny-sotheas-projects.vercel.app", "bongpay-9tvadmw5g-vanny-sotheas-projects.vercel.app"],
+	origin: (origin: string | undefined, callback: Function) => {
+		if (!origin || allowedOrigins.includes(origin)) {
+			callback(null, true)
+		} else {
+			callback(new Error("Not allowed by CORS"))
+		}
+	},
 	credentials: true,
+	allowedHeaders: ["Content-Type", "Authorization"],
+	methods: ["GET", "POST", "PUT", "DELETE"],
 }
 
 app.use(helmet())
@@ -107,19 +124,22 @@ app.use(
 		...proxyOptions,
 		proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
 			proxyReqOpts.headers["Content-Type"] = "application/json"
+
+			// Forward Authorization header if it exists
+			if (srcReq.headers["authorization"]) {
+				proxyReqOpts.headers["Authorization"] = srcReq.headers["authorization"]
+			}
 			return proxyReqOpts
 		},
 		userResDecorator: (proxyRes, proxyResData, userReq, userRes) => {
-			logger.info(
-				`Response received from auth service: ${proxyRes.statusCode}`
-			)
+			logger.info(`Response received from auth service: ${proxyRes.statusCode}`)
 			return proxyResData
 		},
 	})
 )
 
 app.use(errorHandler)
-app.get('/ping', (req, res) => {
+app.get("/ping", (req, res) => {
 	res.json({ message: "PONG" })
 })
 

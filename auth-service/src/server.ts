@@ -13,7 +13,6 @@ import logger from "./utils/logger"
 import errorHandler from "./middleware/errorHandler"
 import router from "./routes/auth-service"
 
-
 const app = express()
 const PORT = process.env.PORT || 3001
 
@@ -36,9 +35,26 @@ redisClient.on("error", (err) => {
 	console.error("Redis error:", err)
 })
 
+const allowedOrigins = [
+	"http://localhost:3000",
+	"http://localhost:3003",
+	"https://bongpay.vercel.app",
+	"https://bongpay-vanny-sotheas-projects.vercel.app",
+	"https://bongpay-git-main-vanny-sotheas-projects.vercel.app",
+	"https://bongpay-9tvadmw5g-vanny-sotheas-projects.vercel.app",
+]
+
 const corsOptions = {
-	origin: ["http://localhost:3000", "http://localhost:3003", "bongpay.vercel.app", "bongpay-vanny-sotheas-projects.vercel.app", "bongpay-git-main-vanny-sotheas-projects.vercel.app", "bongpay-9tvadmw5g-vanny-sotheas-projects.vercel.app"],
+	origin: (origin: string | undefined, callback: Function) => {
+		if (!origin || allowedOrigins.includes(origin)) {
+			callback(null, true)
+		} else {
+			callback(new Error("Not allowed by CORS"))
+		}
+	},
 	credentials: true,
+	allowedHeaders: ["Content-Type", "Authorization"],
+	methods: ["GET", "POST", "PUT", "DELETE"],
 }
 
 app.use(helmet())
@@ -95,14 +111,14 @@ app.use((req, res, next) => {
 		})
 })
 
-app.use('/api/auth/register', sensitiveEndpointsLimiter)
-app.use('/api/auth', router)
+app.use("/api/auth/register", sensitiveEndpointsLimiter)
+app.use("/api/auth", router)
 app.use(errorHandler)
 
 app.listen(PORT, () => {
-    logger.info(`Auth service running on port ${PORT}`);
+	logger.info(`Auth service running on port ${PORT}`)
 })
 
-process.on('unhandledRejection', (reason, promise) => {
-    logger.error('Unhandled rejection at:', promise, 'reason:', reason);
+process.on("unhandledRejection", (reason, promise) => {
+	logger.error("Unhandled rejection at:", promise, "reason:", reason)
 })
