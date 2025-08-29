@@ -44,7 +44,7 @@ RUN pnpm install --prod
 COPY --from=build /usr/src/app/dist ./dist
 
 # Copy generated Prisma client (inside src/generated)
-COPY --from=build /usr/src/app/src/generated ./src/generated
+# COPY --from=build /usr/src/app/src/generated ./src/generated
 
 EXPOSE 3002
 

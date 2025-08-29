@@ -180,4 +180,5 @@ app.get("/ping", (req, res) => {
 app.listen(PORT, () => {
 	logger.info(`API Gateway is running on port ${PORT}`)
 	logger.info(`Auth service is running on port ${process.env.AUTH_SERVICE_URL}`)
+	logger.info(`Product service is running on port ${process.env.PRODUCT_SERVICE_URL}`)
 })
