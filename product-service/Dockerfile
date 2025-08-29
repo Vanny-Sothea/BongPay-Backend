@@ -1,6 +1,4 @@
-# =========================
 # Stage 1: Build
-# =========================
 FROM node:18-alpine AS build
 
 WORKDIR /usr/src/app
@@ -8,24 +6,27 @@ WORKDIR /usr/src/app
 # Install pnpm
 RUN npm install -g pnpm@10.15.0
 
-# Copy package files + Prisma schema + tsconfig
+# Copy package files + tsconfig + Prisma schema
+
 COPY package*.json pnpm-lock.yaml tsconfig*.json prisma/ ./
 
-# Install all dependencies (including dev for TypeScript and Prisma generate)
+# Install all dependencies (including dev for TS compilation)
 RUN pnpm install
 
-# Copy all source code
+#  Copy source code
 COPY . .
 
-# Generate Prisma client
+# Generate Prisma client before TypeScript compilation
 RUN pnpm exec prisma generate
 
-# Compile TypeScript to JS
+# Debug: list generated files to verify Prisma client
+RUN ls -R /usr/src/app/src/generated
+
+# Compile TypeScript
 RUN pnpm exec tsc
 
-# =========================
+
 # Stage 2: Production
-# =========================
 FROM node:18-alpine
 
 WORKDIR /usr/src/app
@@ -35,15 +36,16 @@ RUN npm install -g pnpm@10.15.0
 
 # Copy only production dependencies
 COPY package*.json pnpm-lock.yaml ./
+
+# Install only production dependencies
 RUN pnpm install --prod
 
 # Copy compiled JS from build stage
 COPY --from=build /usr/src/app/dist ./dist
 
-# Copy Prisma client from build stage
-COPY --from=build /usr/src/app/node_modules/@prisma/client ./node_modules/@prisma/client
+# Copy generated Prisma client (inside src/generated)
+COPY --from=build /usr/src/app/src/generated ./src/generated
 
-# Expose application port
 EXPOSE 3002
 
 # Start the application
