@@ -34,19 +34,17 @@ WORKDIR /usr/src/app
 # Install pnpm
 RUN npm install -g pnpm@10.15.0
 
-# Copy only production dependencies
+# Copy package files
 COPY package*.json pnpm-lock.yaml ./
 
-# Install only production dependencies
+# Install only production dependencies (including @prisma/client)
 RUN pnpm install --prod
 
-# Copy compiled JS from build stage
+# Copy compiled JS
 COPY --from=build /usr/src/app/dist ./dist
 
-# Copy generated Prisma client (inside src/generated)
-COPY --from=build /usr/src/app/src/generated ./src/generated
+# Copy prisma schema and generated client (optional, for migrations)
+COPY prisma ./prisma
 
 EXPOSE 3002
-
-# Start the application
 CMD ["node", "dist/server.js"]
