@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id            Int              @id @default(autoincrement())
+  name          String
+  shortDesc     String
+  fullDesc      String?
+  img           String
+  rate          Float            @default(0)
+  originalPrice Float
+  stockQuantity Int
+  isFeatured Boolean @default(false)
+  discount      Discount?
+  properties    ProductProperty[]
+  variants      Variant[]
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+}
+
+
+model Discount {
+  id           Int      @id @default(autoincrement())
+  percentage   Float
+  discountPrice Float
+  productId    Int      @unique
+  product      Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model ProductProperty {
+  id            Int      @id @default(autoincrement())
+  propertyName  String
+  propertyValues String[]
+  productId     Int
+  product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model Variant {
+  id            Int      @id @default(autoincrement())
+  name          String
+  img           String?
+  propertyValues String[]
+  productId     Int
+  product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+}

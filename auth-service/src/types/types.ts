@@ -7,6 +7,7 @@ export interface User {
   id: number;
   firstName: string;
   lastName?: string;
+  role: "USER" | "ADMIN";
   email: string;
   password: string;
   isVerified: boolean;

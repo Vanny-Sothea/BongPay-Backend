@@ -3,7 +3,7 @@ import prisma from "../prismaClient"
 import { sendPasswordResetEmail } from "../mail/email"
 import { validateForgotPasswordRequest } from "../utils/validation"
 import { Request, Response } from "express"
-import { generateResetPasswordToken, generateVerificationToken } from "../utils/generateToken"
+import { generateResetPasswordToken } from "../utils/generateToken"
 import { User } from "../types/types"
 
 export const forgotPasswordUser = async (req: Request, res: Response) => {

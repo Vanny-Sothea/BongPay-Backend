@@ -10,10 +10,10 @@ import { RedisReply, RedisStore } from "rate-limit-redis"
 import cookieParser from "cookie-parser"
 import logger from "./utils/logger"
 import errorHandler from "./middleware/errorHandler"
-import router from "./routes/auth-service"
+import router from "./routes/productRoutes"
 
 const app = express()
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT || 3002
 
 if (!process.env.REDIS_URL) {
 	console.error("REDIS_URL is not defined")
@@ -42,7 +42,6 @@ app.use(helmet())
 app.use(express.json())
 app.use(cookieParser())
 
-// IP based rate limiting for sensitive endpoints
 const sensitiveEndpointsLimiter = rateLimit({
 	windowMs: 15 * 60 * 1000, // 15 Mins
 	max: 100, //50 requests
@@ -91,12 +90,11 @@ app.use((req, res, next) => {
 		})
 })
 
-app.use("/api/auth/register", sensitiveEndpointsLimiter)
-app.use("/api/auth", router)
+app.use("/api/product", router)
 app.use(errorHandler)
 
 app.listen(PORT, () => {
-	logger.info(`Auth service running on port ${PORT}`)
+	logger.info(`Product service running on port ${PORT}`)
 })
 
 process.on("unhandledRejection", (reason, promise) => {

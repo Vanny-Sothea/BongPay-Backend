@@ -19,7 +19,11 @@ if (!process.env.REDIS_URL) {
 	console.error("REDIS_URL is not defined")
 	process.exit(1)
 }
+
+// // Local
 // const redisClient = new Redis(process.env.REDIS_URL)
+
+// Production
 const redisClient = new Redis(process.env.REDIS_URL, {
 	tls: {
 		rejectUnauthorized: false,
@@ -133,6 +137,36 @@ app.use(
 		},
 		userResDecorator: (proxyRes, proxyResData, userReq, userRes) => {
 			logger.info(`Response received from auth service: ${proxyRes.statusCode}`)
+			return proxyResData
+		},
+	})
+)
+
+if (!process.env.PRODUCT_SERVICE_URL) {
+	console.error("PRODUCT_SERVICE_URL is not defined")
+	process.exit(1)
+}
+
+app.use(
+	"/v1/product",
+	captureUrl,
+	proxy(process.env.PRODUCT_SERVICE_URL, {
+		...proxyOptions,
+		proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
+			// Don't force JSON if it's a file upload
+			if (!srcReq.headers["content-type"]) {
+				proxyReqOpts.headers["Content-Type"] = "application/json"
+			}
+
+			if (srcReq.headers["authorization"]) {
+				proxyReqOpts.headers["Authorization"] = srcReq.headers["authorization"]
+			}
+			return proxyReqOpts
+		},
+		userResDecorator: (proxyRes, proxyResData, userReq, userRes) => {
+			logger.info(
+				`Response received from product service: ${proxyRes.statusCode}`
+			)
 			return proxyResData
 		},
 	})
