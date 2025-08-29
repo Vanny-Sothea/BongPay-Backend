@@ -18,3 +18,11 @@ auth-service:
     - redis
   environment:
     - REDIS_URL=redis://redis:6379
+
+product-service:
+  build: ./product-service
+  env_file: ./product-service/.env
+  depends_on:
+    - redis
+  environment:
+    - REDIS_URL=redis://redis:6379
